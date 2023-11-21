@@ -1,6 +1,7 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,7 @@ public class Mine : MonoBehaviour, IOnEventCallback {
         if (exploded) return;
 
         if (other.CompareTag("Player")) {
-            PhotonNetwork.RaiseEvent(MINE_EXPLODE, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent(MINE_EXPLODE, mineID, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
         }
     }
 
@@ -52,8 +53,12 @@ public class Mine : MonoBehaviour, IOnEventCallback {
     public void OnEvent(EventData photonEvent) {
         //Debug.Log($"Evento recibido: {photonEvent.Code}");
 
-        if (photonEvent.Code == MINE_EXPLODE) {
+        if (photonEvent.Code == MINE_EXPLODE && mineID == (int)photonEvent.CustomData) {
             Explode();
         }
+    }
+
+    public void SetID(int spawnID) {
+        mineID = spawnID;
     }
 }

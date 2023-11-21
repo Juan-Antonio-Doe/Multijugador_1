@@ -114,6 +114,8 @@ MonoBehaviour:
   grenadePrefab: {fileID: 7258103919543066350, guid: fd903335c9b49cd48bad8611932193e5, type: 3}
   grenadeSpawnPoint: {fileID: 8920287533356658897}
   throwForce: 6
+  maxAmmo: 30
+  currentAmmo: 30
   arms: {fileID: 5199643079488270739}
   armsAnim: {fileID: 5199643079478451839}
   swatAnim: {fileID: 8849793954195468791}

@@ -21,6 +21,11 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     [SerializeField] private Transform grenadeSpawnPoint;
     [SerializeField] private int throwForce = 6;
 
+    [Header("Shoot & Reload")]
+    [SerializeField] private int maxAmmo = 30;
+    [SerializeField] private int currentAmmo = 30;
+    private bool isReloading;
+
     [SerializeField] private Transform arms;    // El objeto con los brazos y la camara del personaje.
     private float armsRotationX = 0f;    // La rotación en X de los brazos.
 
@@ -44,6 +49,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         else {
             armsAnim = arms.GetComponent<Animator>();
             gameObject.layer = 0;   // Layer: Default
+
+            currentAmmo = maxAmmo;
         }
     }
 
@@ -126,7 +133,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     }
 
     void Shoot() {
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButton(0) && (currentAmmo > 0)) {
             Ray _ray = cam.ScreenPointToRay(new Vector3(0.5f, 0.5f, cam.nearClipPlane));
 
             if (Physics.Raycast(_ray.origin, cam.transform.forward, out RaycastHit _hit, 1000f, damageLayer)) {
@@ -139,6 +146,13 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
             photonView.RPC(nameof(RPC_Shoot), RpcTarget.Others);
             swatAnim.SetTrigger("Shoot");
+
+            currentAmmo--;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && (currentAmmo < maxAmmo) && !isReloading) {
+            isReloading = true;
+            photonView.RPC(nameof(RPC_Reload), RpcTarget.All);
         }
     }
 
@@ -192,8 +206,33 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         photonView.RPC(nameof(RPC_ThrowGrenade), RpcTarget.All, grenadeSpawnPoint.position, cam.transform.forward * throwForce);
     }
 
+    IEnumerator ReloadCo() {
+
+        if (photonView.IsMine) {
+            armsAnim.SetTrigger("Reload");
+            yield return new WaitForSeconds(64f / 30f);
+            currentAmmo = maxAmmo;
+            isReloading = false;
+        }
+        else {
+            armsAnim.SetTrigger("Reload");
+            yield return null;
+        }
+
+    }
+
+    [PunRPC]
+    void RPC_Reload() {
+        StartCoroutine(ReloadCo());
+    }
+
     void OnGUI() {
-        if (photonView.IsMine)
+        if (photonView.IsMine) {
+            GUI.color = Color.red;
             GUI.Label(new Rect(10, 10, 100, 20), $"Vida: {health}");
+
+            GUI.color = Color.cyan;
+            GUI.Label(new Rect(10, 30, 100, 20), $"Municion: {currentAmmo}/{maxAmmo}");
+        }
     }
 }

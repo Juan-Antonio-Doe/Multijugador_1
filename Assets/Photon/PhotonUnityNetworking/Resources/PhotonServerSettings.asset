@@ -44,6 +44,7 @@ MonoBehaviour:
   - RPC_TakeDamage
   - RPC_Shoot
   - RPC_ThrowGrenade
+  - RPC_Reload
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

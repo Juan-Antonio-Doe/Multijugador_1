@@ -838,7 +838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0812f2295f3a984e98f2e9ad3246ac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minePrefab: {fileID: 5416177539298194909, guid: d5cc6a2ea279d1846845a3967528306f, type: 3}
+  minePrefab: {fileID: 6963563631940642642, guid: d5cc6a2ea279d1846845a3967528306f, type: 3}
   spawnRange: {x: 9, y: 9}
   timeToSpawn: {x: 5, y: 10}
 --- !u!1 &1669416311

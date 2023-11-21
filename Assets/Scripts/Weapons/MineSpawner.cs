@@ -47,11 +47,15 @@ public class MineSpawner : MonoBehaviour, IOnEventCallback {
         if (photonEvent.Code == MINE_SPAWN) {
             object[] _parameters = (object[])photonEvent.CustomData;    // Recuperamos los datos enviados en el evento
 
+            // Los datos se recuperan en el mismo orden en el que se enviaron
             Vector3 _spawnPos = (Vector3)_parameters[0];
-            int _spawnID = (int)_parameters[1];
+            spawnID = (int)_parameters[1];  // Actualizamos el ID de la mina que recibimos del master client
 
-            GameObject _mine = Instantiate(minePrefab.gameObject, _spawnPos, Quaternion.Euler(0, 0, 0));
+            Mine _mine = Instantiate(minePrefab, _spawnPos, Quaternion.Euler(0, 0, 0));
             _mine.transform.SetParent(transform);
+            _mine.SetID(spawnID);
+
+            spawnID++;  // Incrementamos el ID de la mina para que la siguiente tenga un ID diferente
         }
     }
 }
