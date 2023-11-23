@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 4e19767e24b001a49b1687aaa805a1e9
+labels:
+- Scene
 DefaultImporter:
   externalObjects: {}
   userData: 

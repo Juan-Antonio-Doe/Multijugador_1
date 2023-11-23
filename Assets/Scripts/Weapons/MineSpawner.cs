@@ -8,8 +8,12 @@ using UnityEngine;
 public class MineSpawner : MonoBehaviour, IOnEventCallback {
 
     [SerializeField] private Mine minePrefab;
-    [SerializeField] private Vector2 spawnRange = new Vector2(5f, 5f);
+    [SerializeField] private Collider spawnArea;
     [SerializeField] private Vector2Int timeToSpawn = new Vector2Int(5, 10);
+
+    [SerializeField] private float checkRadius = 0.5f;
+    [SerializeField] private LayerMask obstacleLayer;
+
     [SerializeField] private const byte MINE_SPAWN = 27;    // Constante para identificar el evento de crear minas
 
     private int spawnID;    // Para diferenciar las minas entre sí
@@ -33,8 +37,15 @@ public class MineSpawner : MonoBehaviour, IOnEventCallback {
     }
 
     void SpawnMine() {
-        // Calculamos posición aleatoria usando los dos valores del vector2
-        Vector3 _randomPos = new Vector3(Random.Range(-spawnRange.x, spawnRange.x), 0f, Random.Range(-spawnRange.y, spawnRange.y));
+        // Calculamos posición aleatoria usando los bounds del collider para que siempre elija un punto dentro del área
+        Vector3 _randomPos = new Vector3(Random.Range(-spawnArea.bounds.extents.x, spawnArea.bounds.extents.x), 0,
+            Random.Range(-spawnArea.bounds.extents.z, spawnArea.bounds.extents.z));
+
+        // Comprobamos que no haya obstáculos en la posición aleatoria
+        if (Physics.CheckSphere(_randomPos, checkRadius, obstacleLayer)) {
+            SpawnMine();    // Si hay obstáculos, volvemos a llamar a la función para que calcule otra posición
+            return;
+        }
 
         object[] _parameters = new object[] { _randomPos, spawnID };    // Creamos un array de objetos para enviar los datos que queramos
 

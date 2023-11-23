@@ -7,7 +7,9 @@ using UnityEngine.UI;
 public class PlayerSpawn : MonoBehaviour {
 
     [SerializeField] private GameObject prefab;
-    /*[SerializeField] */private float yPos = 0.25f;
+    /*[SerializeField] */private float yPos = -0.5f;
+
+    [SerializeField] private GameObject[] spawnPoints;
 
     [SerializeField] private Text playerList;
 
@@ -16,9 +18,11 @@ public class PlayerSpawn : MonoBehaviour {
     IEnumerator Start() {
         lastCount = 0;
 
-        Vector3 _spawnPos = new Vector3(0, yPos, 0);
-        _spawnPos.x = Random.Range(-10, 10);
-        _spawnPos.z = Random.Range(-10, 10);
+        spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
+
+        Vector3 _spawnPos = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position;
+        _spawnPos.y = yPos;
+
         Init();
 
         yield return new WaitForSeconds(1f); // Hay que añadir este Delay para que funcione correctamente.
@@ -33,10 +37,6 @@ public class PlayerSpawn : MonoBehaviour {
 
                 playerList.text = $"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}";
                 lastCount = PhotonNetwork.CurrentRoom.PlayerCount;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Escape)) {
-                Init();
             }
         }
     }

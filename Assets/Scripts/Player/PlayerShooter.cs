@@ -25,6 +25,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     [SerializeField] private int maxAmmo = 30;
     [SerializeField] private int currentAmmo = 30;
     private bool isReloading;
+    [SerializeField] private int fireRate = 10;
+    private float shootTimer = 0f;
 
     [SerializeField] private Transform arms;    // El objeto con los brazos y la camara del personaje.
     private float armsRotationX = 0f;    // La rotación en X de los brazos.
@@ -133,7 +135,9 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     }
 
     void Shoot() {
-        if (Input.GetMouseButton(0) && (currentAmmo > 0)) {
+        if (Input.GetMouseButton(0) && (currentAmmo > 0) && Time.time > shootTimer) {
+            shootTimer = Time.time + (1f / fireRate);
+
             Ray _ray = cam.ScreenPointToRay(new Vector3(0.5f, 0.5f, cam.nearClipPlane));
 
             if (Physics.Raycast(_ray.origin, cam.transform.forward, out RaycastHit _hit, 1000f, damageLayer)) {
@@ -145,7 +149,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             }
 
             photonView.RPC(nameof(RPC_Shoot), RpcTarget.Others);
-            swatAnim.SetTrigger("Shoot");
+            armsAnim.SetTrigger("Shoot");
 
             currentAmmo--;
         }
