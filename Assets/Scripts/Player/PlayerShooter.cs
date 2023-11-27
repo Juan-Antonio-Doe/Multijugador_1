@@ -20,6 +20,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     [SerializeField] private Rigidbody grenadePrefab;
     [SerializeField] private Transform grenadeSpawnPoint;
     [SerializeField] private int throwForce = 6;
+    private bool hasGrenade = true; // Para limitar que solo se pueda lanzar una granada.
 
     [Header("Shoot & Reload")]
     [SerializeField] private int maxAmmo = 30;
@@ -27,6 +28,9 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     private bool isReloading;
     [SerializeField] private int fireRate = 10;
     private float shootTimer = 0f;
+
+    [SerializeField] private ParticleSystem localShootPS;
+    [SerializeField] private ParticleSystem swatShootPS;
 
     [SerializeField] private Transform arms;    // El objeto con los brazos y la camara del personaje.
     private float armsRotationX = 0f;    // La rotación en X de los brazos.
@@ -58,10 +62,14 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     void Update() {
         if (photonView.IsMine) {
-            MovementAndRotation();
-            Shoot();
 
-            if (Input.GetKeyDown(KeyCode.G) || Input.GetMouseButtonDown(2)) {
+            if (health > 0) {
+                MovementAndRotation();
+                Shoot();
+            }
+
+            if ((Input.GetKeyDown(KeyCode.G) || Input.GetMouseButtonDown(2)) && hasGrenade) {
+                hasGrenade = false;
                 StartCoroutine(ThrowGrenadeCo());
             }
 
@@ -71,6 +79,13 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             if (Input.GetKey(KeyCode.Keypad2)) {
                 // Rota la al jugador continuamente mientras se pulsa la tecla.
                 transform.rotation *= Quaternion.Euler(10, 10, 10);
+            }
+            if (Input.GetKey(KeyCode.Keypad1)) {
+                // Resetea la posición del jugador a la 0,0,0 del padre.
+                transform.localPosition = Vector3.zero;
+            }
+            if (Input.GetKey(KeyCode.Keypad7)) {
+                hasGrenade = true;
             }
         }
         else {
@@ -150,6 +165,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
             photonView.RPC(nameof(RPC_Shoot), RpcTarget.Others);
             armsAnim.SetTrigger("Shoot");
+            localShootPS.Play();
 
             currentAmmo--;
         }
@@ -162,20 +178,36 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     [PunRPC]
     void RPC_Shoot() {
-        //photonView.RPC(nameof(RPC_Shoot), RpcTarget.Others);
+        // El resto de jugadores solo tiene que ver la parte visual del disparo (animación, particulas, sonido...).
         swatAnim.SetTrigger("Shoot");
+        swatShootPS.Play();
     }
 
     public void TakeDamage(int _damage) {
         photonView.RPC(nameof(RPC_TakeDamage), photonView.Owner, _damage);
     }
 
+    // Este RPC solo se llama localmente por el jugador que recibe el daño.
     [PunRPC]
     void RPC_TakeDamage(int _damage) {
-        if (health > 0)
+        if (health > 0) {
             health -= _damage;
+            if (health <= 0) {
+                photonView.RPC(nameof(RPC_Die), RpcTarget.All);
+            }
+        }
 
         Debug.Log($"Daño: <b>{photonView.Owner.NickName}</b> tiene <b>{health}</b> de vida.");
+    }
+
+    [PunRPC]
+    void RPC_Die() {
+        if (photonView.IsMine) {
+            arms.gameObject.SetActive(false);
+        }
+        else {
+            swatAnim.gameObject.SetActive(false);
+        }
     }
 
     void SwatMovementAnimation(Vector3 _input) {

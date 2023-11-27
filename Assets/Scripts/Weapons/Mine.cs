@@ -13,6 +13,8 @@ public class Mine : MonoBehaviour, IOnEventCallback {
     [SerializeField] private LayerMask damageLayer;
     [SerializeField] private int mineID;    // Para diferenciar las minas entre sí
 
+    [SerializeField] private GameObject explosionPrefab;    // Prefab del sistema de particulas de la explosion.
+
     private bool exploded;
 
     private const byte MINE_EXPLODE = 88;
@@ -60,5 +62,14 @@ public class Mine : MonoBehaviour, IOnEventCallback {
 
     public void SetID(int spawnID) {
         mineID = spawnID;
+    }
+
+    void OnDestroy() {
+        /*
+         * Como todos los jugadores tienen una copia de la granada en su juego, con instanciar localmente la explosion,
+         * la vera todo el mundo sin necesidad de sincronizar nada.
+         */
+
+        Instantiate(explosionPrefab, transform.position, explosionPrefab.transform.rotation);
     }
 }

@@ -9,10 +9,11 @@ public class Grenade : MonoBehaviour {
     [SerializeField] private float explosionRadius = 3f;
     [SerializeField] private float timeToExplode = 3f;
     [SerializeField] private LayerMask damageLayer;
+
+    [SerializeField] private GameObject explosionPrefab;    // Prefab del sistema de particulas de la explosion.
 	
     IEnumerator Start() {
         yield return new WaitForSeconds(timeToExplode);
-
         Explode();
     }
 
@@ -33,5 +34,14 @@ public class Grenade : MonoBehaviour {
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
+    }
+
+    void OnDestroy() {
+        /*
+         * Como todos los jugadores tienen una copia de la granada en su juego, con instanciar localmente la explosion,
+         * la vera todo el mundo sin necesidad de sincronizar nada.
+         */
+
+        Instantiate(explosionPrefab, transform.position, explosionPrefab.transform.rotation);
     }
 }
