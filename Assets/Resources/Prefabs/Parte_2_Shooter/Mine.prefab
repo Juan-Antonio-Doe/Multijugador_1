@@ -54,7 +54,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 65
   mineID: 0
-  explosionPrefab: {fileID: 4973526768938115720}
+  explosionPrefab: {fileID: 5464255132879142151, guid: 5146fc484165c1c408763022cb84453a, type: 3}
 --- !u!33 &7982439679392562432
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -174,20 +174,35 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5464255132879142149, guid: 5146fc484165c1c408763022cb84453a, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5464255132879142151, guid: 5146fc484165c1c408763022cb84453a, type: 3}
       propertyPath: m_Name
       value: Explosion_Grenade
+      objectReference: {fileID: 0}
+    - target: {fileID: 8637931600681216144, guid: 5146fc484165c1c408763022cb84453a, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8637961848204222792, guid: 5146fc484165c1c408763022cb84453a, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8638724385367781048, guid: 5146fc484165c1c408763022cb84453a, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8638951307415457128, guid: 5146fc484165c1c408763022cb84453a, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5146fc484165c1c408763022cb84453a, type: 3}
---- !u!1 &4973526768938115720 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5464255132879142151, guid: 5146fc484165c1c408763022cb84453a, type: 3}
-  m_PrefabInstance: {fileID: 1067752412551208847}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4973526768938115723 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5464255132879142148, guid: 5146fc484165c1c408763022cb84453a, type: 3}

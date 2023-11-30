@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerSpawn : MonoBehaviour {
 
+    public static PlayerSpawn Instance;
+
     [SerializeField] private GameObject prefab;
     /*[SerializeField] */private float yPos = -0.5f;
 
@@ -13,15 +15,24 @@ public class PlayerSpawn : MonoBehaviour {
 
     [SerializeField] private Text playerList;
 
+    [SerializeField] private GameObject cam;
+    public GameObject Cam { get { return cam; } }
+
     private int lastCount = 0;
+
+    void Awake() {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(this);
+    }
 
     IEnumerator Start() {
         lastCount = 0;
 
         spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
 
-        Vector3 _spawnPos = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position;
-        _spawnPos.y = yPos;
+        Vector3 _spawnPos = GetSpawnPosition();
 
         Init();
 
@@ -45,6 +56,13 @@ public class PlayerSpawn : MonoBehaviour {
         // Bloqueamos el cursor.
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public Vector3 GetSpawnPosition() {
+        Vector3 _spawnPos = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position;
+        _spawnPos.y = yPos;
+
+        return _spawnPos;
     }
 
 }

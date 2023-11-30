@@ -37,6 +37,9 @@ public class Grenade : MonoBehaviour {
     }
 
     void OnDestroy() {
+        if (gameObject == null)
+            return;
+
         /*
          * Como todos los jugadores tienen una copia de la granada en su juego, con instanciar localmente la explosion,
          * la vera todo el mundo sin necesidad de sincronizar nada.

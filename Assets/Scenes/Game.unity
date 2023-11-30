@@ -311,22 +311,13 @@ GameObject:
   m_Component:
   - component: {fileID: 442940027}
   - component: {fileID: 442940026}
-  - component: {fileID: 442940025}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!81 &442940025
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 442940024}
-  m_Enabled: 1
+  m_IsActive: 1
 --- !u!20 &442940026
 Camera:
   m_ObjectHideFlags: 0
@@ -363,7 +354,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: -10
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -386,8 +377,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 442940024}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13052596, y: -0, z: -0, w: 0.99144495}
-  m_LocalPosition: {x: 0, y: 23.02901, z: -82.48148}
+  m_LocalRotation: {x: -0.37629515, y: -0.008986953, z: 0.0034127, w: -0.92645}
+  m_LocalPosition: {x: -1.2538524, y: 21.93104, z: -23.826166}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -957,6 +948,7 @@ MonoBehaviour:
   prefab: {fileID: 7160626187649828010, guid: da9c50639baea3443ac1f34aaaa95631, type: 3}
   spawnPoints: []
   playerList: {fileID: 732214846}
+  cam: {fileID: 442940024}
 --- !u!4 &1385452528
 Transform:
   m_ObjectHideFlags: 0

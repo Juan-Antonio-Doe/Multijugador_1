@@ -69,12 +69,14 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             }
 
             if ((Input.GetKeyDown(KeyCode.G) || Input.GetMouseButtonDown(2)) && hasGrenade) {
-                hasGrenade = false;
+                //hasGrenade = false;
                 StartCoroutine(ThrowGrenadeCo());
             }
 
             if (Input.GetKeyDown(KeyCode.Keypad0)) {
+                cc.enabled = false;
                 transform.position = new Vector3(0, -5, 0);
+                cc.enabled = true;
             }
             if (Input.GetKey(KeyCode.Keypad2)) {
                 // Rota la al jugador continuamente mientras se pulsa la tecla.
@@ -82,7 +84,9 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             }
             if (Input.GetKey(KeyCode.Keypad1)) {
                 // Resetea la posición del jugador a la 0,0,0 del padre.
+                cc.enabled = false;
                 transform.localPosition = Vector3.zero;
+                cc.enabled = true;
             }
             if (Input.GetKey(KeyCode.Keypad7)) {
                 hasGrenade = true;
@@ -202,11 +206,34 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     [PunRPC]
     void RPC_Die() {
+        StartCoroutine(RespawnCo());
+    }
+
+    IEnumerator RespawnCo() {
         if (photonView.IsMine) {
             arms.gameObject.SetActive(false);
+            PlayerSpawn.Instance.Cam.gameObject.SetActive(true);
+
+            cc.enabled = false;
+            transform.position = PlayerSpawn.Instance.GetSpawnPosition();
+            cc.enabled = true;
         }
         else {
             swatAnim.gameObject.SetActive(false);
+        }
+
+        yield return new WaitForSeconds(3f);
+
+        if (photonView.IsMine) {
+            arms.gameObject.SetActive(true);
+            PlayerSpawn.Instance.Cam.gameObject.SetActive(false);
+
+            health = 100;
+            currentAmmo = maxAmmo;
+            hasGrenade = true;
+        }
+        else {
+            swatAnim.gameObject.SetActive(true);
         }
     }
 
