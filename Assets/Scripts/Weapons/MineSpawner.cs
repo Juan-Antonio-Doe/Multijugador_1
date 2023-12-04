@@ -63,7 +63,7 @@ public class MineSpawner : MonoBehaviour, IOnEventCallback {
             spawnID = (int)_parameters[1];  // Actualizamos el ID de la mina que recibimos del master client
 
             Mine _mine = Instantiate(minePrefab, _spawnPos, Quaternion.Euler(0, 0, 0));
-            _mine.transform.SetParent(transform);
+            _mine.transform.SetParent(spawnArea.transform);
             _mine.SetID(spawnID);
 
             spawnID++;  // Incrementamos el ID de la mina para que la siguiente tenga un ID diferente

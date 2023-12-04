@@ -1,10 +1,13 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class PlayerSpawn : MonoBehaviour {
+public class PlayerSpawn : MonoBehaviourPunCallbacks {
 
     public static PlayerSpawn Instance;
 
@@ -18,7 +21,7 @@ public class PlayerSpawn : MonoBehaviour {
     [SerializeField] private GameObject cam;
     public GameObject Cam { get { return cam; } }
 
-    private int lastCount = 0;
+    private int playerLastCount = 0;
 
     void Awake() {
         if (Instance == null)
@@ -28,7 +31,12 @@ public class PlayerSpawn : MonoBehaviour {
     }
 
     IEnumerator Start() {
-        lastCount = 0;
+        Hashtable _properties = new Hashtable() {
+            { "KC", 0 },
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(_properties);
+
+        playerLastCount = 0;
 
         spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
 
@@ -43,11 +51,11 @@ public class PlayerSpawn : MonoBehaviour {
 
     private void Update() {
         if (PhotonNetwork.InRoom) {
-            if (PhotonNetwork.CurrentRoom.PlayerCount != lastCount) {   // Compruba que el contador se ha actualizado.
+            if (PhotonNetwork.CurrentRoom.PlayerCount != playerLastCount) {   // Compruba que el contador se ha actualizado.
                 //Debug.Log($"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}");
 
                 playerList.text = $"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}";
-                lastCount = PhotonNetwork.CurrentRoom.PlayerCount;
+                playerLastCount = PhotonNetwork.CurrentRoom.PlayerCount;
             }
         }
     }
@@ -65,4 +73,19 @@ public class PlayerSpawn : MonoBehaviour {
         return _spawnPos;
     }
 
+    public void AddToKillCounter() {
+        PhotonNetwork.CurrentRoom.CustomProperties["KC"] = (int) PhotonNetwork.CurrentRoom.CustomProperties["KC"] + 1;
+
+        /*int _killCounter = (int)PhotonNetwork.CurrentRoom.CustomProperties["KC"];
+        _killCounter++;
+        PhotonNetwork.CurrentRoom.CustomProperties["KC"] = _killCounter;*/
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(PhotonNetwork.CurrentRoom.CustomProperties);
+    }
+
+    public override void OnDisconnected(DisconnectCause cause) {
+        base.OnDisconnected(cause);
+
+        SceneManager.LoadScene(0);
+    }
 }

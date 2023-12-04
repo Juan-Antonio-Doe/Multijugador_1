@@ -1,7 +1,9 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
@@ -73,6 +75,11 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
                 StartCoroutine(ThrowGrenadeCo());
             }
 
+            if (Input.GetKeyDown(KeyCode.BackQuote)) {
+                RageQuit();
+            }
+
+            #region Cheats
             if (Input.GetKeyDown(KeyCode.Keypad0)) {
                 cc.enabled = false;
                 transform.position = new Vector3(0, -5, 0);
@@ -91,6 +98,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             if (Input.GetKey(KeyCode.Keypad7)) {
                 hasGrenade = true;
             }
+            #endregion
         }
         else {
             SyncOtherPlayers();
@@ -198,6 +206,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             health -= _damage;
             if (health <= 0) {
                 photonView.RPC(nameof(RPC_Die), RpcTarget.All);
+                PlayerSpawn.Instance.AddToKillCounter();
             }
         }
 
@@ -289,13 +298,20 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         StartCoroutine(ReloadCo());
     }
 
+    void RageQuit() {
+        PhotonNetwork.Disconnect();
+    }
+
     void OnGUI() {
         if (photonView.IsMine) {
-            GUI.color = Color.red;
+            GUI.color = Color.green;
             GUI.Label(new Rect(10, 10, 100, 20), $"Vida: {health}");
 
             GUI.color = Color.cyan;
             GUI.Label(new Rect(10, 30, 100, 20), $"Municion: {currentAmmo}/{maxAmmo}");
+
+            GUI.color = Color.red;
+            GUI.Label(new Rect(Screen.width / 2, 0, 100, 50), $"Muertes totales: {PhotonNetwork.CurrentRoom.CustomProperties["KC"]}");
         }
     }
 }

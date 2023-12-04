@@ -12,6 +12,9 @@ public class RoomManager : MonoBehaviourPunCallbacks {
         lastCount = 0;
         PhotonNetwork.NickName = "Zero";
 
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
         Connect();
     }
 

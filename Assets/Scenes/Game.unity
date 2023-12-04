@@ -478,7 +478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1857883945946590122, guid: b5ce2c347b1b71b44b3c95b33d8b5c7b, type: 3}
       propertyPath: m_Name
-      value: Map
+      value: __Map__
       objectReference: {fileID: 0}
     - target: {fileID: 1857883945946590123, guid: b5ce2c347b1b71b44b3c95b33d8b5c7b, type: 3}
       propertyPath: m_LocalPosition.x
