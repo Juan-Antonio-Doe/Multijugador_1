@@ -3,7 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
@@ -53,6 +53,13 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         if (!photonView.IsMine) {
             swatAnim.gameObject.SetActive(true);
             arms.gameObject.SetActive(false);
+
+            // Inicializamos las propiedades del jugador.
+            Hashtable _properties = new Hashtable() {
+                { "K", 0 }, // Kills
+                { "D", 0 }, // Deaths
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(_properties);
         }
         else {
             armsAnim = arms.GetComponent<Animator>();
@@ -94,6 +101,14 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
                 cc.enabled = false;
                 transform.localPosition = Vector3.zero;
                 cc.enabled = true;
+            }
+            if (Input.GetKey(KeyCode.Keypad3)) {
+                // Resetea el transform.
+                cc.enabled = false;
+                transform.position = Vector3.zero;
+                transform.rotation = new Quaternion(0, 0, 0, 0);
+                cc.enabled = true;
+
             }
             if (Input.GetKey(KeyCode.Keypad7)) {
                 hasGrenade = true;
@@ -201,21 +216,52 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     // Este RPC solo se llama localmente por el jugador que recibe el daño.
     [PunRPC]
-    void RPC_TakeDamage(int _damage) {
+    void RPC_TakeDamage(int _damage, PhotonMessageInfo info) {
         if (health > 0) {
             health -= _damage;
             if (health <= 0) {
-                photonView.RPC(nameof(RPC_Die), RpcTarget.All);
+                /*
+                 * Cuando el jugador muere localmente, avisa a todo el mundo de que ha muerto.
+                 * Para avisar al jugador que nos ha matado y que se pueda sumar una eliminacion, pasamos
+                 * su jugador como parametro del RPC (info.Sender es el jugador que nos envia el RPC).
+                 */
+                photonView.RPC(nameof(RPC_Die), RpcTarget.All, info.Sender);
                 PlayerSpawn.Instance.AddToKillCounter();
+
+                /*Hashtable _properties = new Hashtable() {
+                    { "D", (int) PhotonNetwork.LocalPlayer.CustomProperties["D"] + 1 },
+                };
+                PhotonNetwork.LocalPlayer.SetCustomProperties(_properties);*/
+
+                /// Profesor:
+                // Sumamos 1 a nuestra propiedad de muertes.
+                int _deaths = (int)PhotonNetwork.LocalPlayer.CustomProperties["D"] + 1;
+                PhotonNetwork.LocalPlayer.CustomProperties["D"] = _deaths;
+                PhotonNetwork.LocalPlayer.SetCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
             }
         }
 
-        Debug.Log($"Daño: <b>{photonView.Owner.NickName}</b> tiene <b>{health}</b> de vida.");
+        //Debug.Log($"Daño: <color=#FF0000><b>{photonView.Owner.NickName}</b></color> tiene <color=#00FF00><b>{health}</b></color> de vida.");
     }
 
     [PunRPC]
-    void RPC_Die() {
+    void RPC_Die(Player _killer) {
         StartCoroutine(RespawnCo());
+
+        if (_killer == PhotonNetwork.LocalPlayer) {
+            /*Hashtable _properties = new Hashtable() {
+                    { "K", (int) PhotonNetwork.LocalPlayer.CustomProperties["K"] + 1 },
+                };
+                PhotonNetwork.LocalPlayer.SetCustomProperties(_properties);*/
+
+            /// Profesor:
+            // Sumamos 1 a nuestra propiedad de kills.
+            int _kills = (int)PhotonNetwork.LocalPlayer.CustomProperties["K"] + 1;
+            PhotonNetwork.LocalPlayer.CustomProperties["K"] = _kills;
+            PhotonNetwork.LocalPlayer.SetCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
+
+            Debug.Log($"<color=#FF0000><b>{_killer.NickName}</b></color> me ha matado.");
+        }
     }
 
     IEnumerator RespawnCo() {

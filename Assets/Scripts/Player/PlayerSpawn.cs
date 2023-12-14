@@ -23,6 +23,8 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
 
     private int playerLastCount = 0;
 
+    GUIStyle style = new GUIStyle();
+
     void Awake() {
         if (Instance == null)
             Instance = this;
@@ -31,11 +33,6 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
     }
 
     IEnumerator Start() {
-        Hashtable _properties = new Hashtable() {
-            { "KC", 0 },
-        };
-        PhotonNetwork.CurrentRoom.SetCustomProperties(_properties);
-
         playerLastCount = 0;
 
         spawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
@@ -45,6 +42,12 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
         Init();
 
         yield return new WaitForSeconds(1f); // Hay que añadir este Delay para que funcione correctamente.
+
+        Hashtable _properties = new Hashtable() {
+            { "KC", 0 },
+        };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(_properties);
+
         // Crea un prefab para todos los usuarios conectados en la posicion indicada.
         PhotonNetwork.Instantiate(prefab.name, _spawnPos, prefab.transform.rotation);
     }
@@ -57,6 +60,13 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
                 playerList.text = $"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}";
                 playerLastCount = PhotonNetwork.CurrentRoom.PlayerCount;
             }
+
+            if (PhotonNetwork.MasterClient.CustomProperties == null) 
+                return;
+
+            int _kills = (int)PhotonNetwork.MasterClient.CustomProperties["K"];
+            int _deaths = (int)PhotonNetwork.MasterClient.CustomProperties["D"];
+            Debug.Log($"MasterClient:: Kills: <color=#FF0000>{_kills}</color> | Deaths: <color=#FF0000>{_deaths}</color>");
         }
     }
 
@@ -87,5 +97,24 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
         base.OnDisconnected(cause);
 
         SceneManager.LoadScene(0);
+    }
+
+    private void OnGUI() {
+        try {
+            if (Input.GetKey(KeyCode.Tab) == false) {
+                return;
+            }
+            GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "SCOREBOARD");
+            style.alignment = TextAnchor.MiddleCenter;
+            GUILayout.BeginArea(new Rect(0f, 100f, Screen.width, Screen.height - 100f));
+            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++) {
+                string label = $"{PhotonNetwork.PlayerList[i].NickName} - {(int)PhotonNetwork.PlayerList[i].CustomProperties["K"]} " +
+                    $"| {(int)PhotonNetwork.PlayerList[i].CustomProperties["D"]}";
+
+                GUILayout.Label(label, style);
+            }
+            GUILayout.EndArea();
+        }
+        catch { }
     }
 }

@@ -21,7 +21,7 @@ public class RoomManager : MonoBehaviourPunCallbacks {
     private void Update() {
         if (PhotonNetwork.InRoom) {
             if (PhotonNetwork.CurrentRoom.PlayerCount != lastCount) {   // Compruba que el contador se ha actualizado.
-                Debug.Log($"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}");
+                //Debug.Log($"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}");
                 lastCount = PhotonNetwork.CurrentRoom.PlayerCount;
             }
         }
