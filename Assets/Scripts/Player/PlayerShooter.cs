@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -66,6 +67,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             gameObject.layer = 0;   // Layer: Default
 
             currentAmmo = maxAmmo;
+
+            PhotonNetwork.LocalPlayer.TagObject = gameObject;
         }
     }
 
@@ -260,7 +263,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             PhotonNetwork.LocalPlayer.CustomProperties["K"] = _kills;
             PhotonNetwork.LocalPlayer.SetCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
 
-            Debug.Log($"<color=#FF0000><b>{_killer.NickName}</b></color> me ha matado.");
+            Debug.Log($"<color=red><b>{_killer.NickName}</b></color> me ha matado.");
         }
     }
 
@@ -357,7 +360,25 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             GUI.Label(new Rect(10, 30, 100, 20), $"Municion: {currentAmmo}/{maxAmmo}");
 
             GUI.color = Color.red;
-            GUI.Label(new Rect(Screen.width / 2, 0, 100, 50), $"Muertes totales: {PhotonNetwork.CurrentRoom.CustomProperties["KC"]}");
+            GUI.Label(new Rect((Screen.width / 2) - 20, 14, 100, 50), $"Muertes totales: \n\t {PhotonNetwork.CurrentRoom.CustomProperties["KC"]}");
+        }
+
+    }
+
+    void OnDrawGizmos() {
+#if UNITY_EDITOR
+        GUI.color = Color.green;
+        Handles.Label(transform.position + new Vector3(0, 1.8f, 0), gameObject.name);
+#endif
+    }
+
+    private void OnDestroy() {
+        if (gameObject == null)
+            return;
+
+        if (photonView.IsMine) {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 }

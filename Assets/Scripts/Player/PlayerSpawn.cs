@@ -21,6 +21,10 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
     [SerializeField] private GameObject cam;
     public GameObject Cam { get { return cam; } }
 
+    [SerializeField] private Text endText;
+
+    [SerializeField] private int maxKills = 10;
+
     private int playerLastCount = 0;
 
     GUIStyle style = new GUIStyle();
@@ -66,7 +70,7 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
 
             int _kills = (int)PhotonNetwork.MasterClient.CustomProperties["K"];
             int _deaths = (int)PhotonNetwork.MasterClient.CustomProperties["D"];
-            Debug.Log($"MasterClient:: Kills: <color=#FF0000>{_kills}</color> | Deaths: <color=#FF0000>{_deaths}</color>");
+            //Debug.Log($"MasterClient:: Kills: <color=red>{_kills}</color> | Deaths: <color=blue>{_deaths}</color>");
         }
     }
 
@@ -91,6 +95,45 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
         PhotonNetwork.CurrentRoom.CustomProperties["KC"] = _killCounter;*/
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(PhotonNetwork.CurrentRoom.CustomProperties);
+    }
+
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged) {
+        if (propertiesThatChanged != null && propertiesThatChanged.ContainsKey("KC")) {
+            if ((int)propertiesThatChanged["KC"] >= maxKills) {
+                EndGame(propertiesThatChanged);
+            }
+        }
+    }
+
+    void EndGame(Hashtable propertiesThatChanged) {
+        //Debug.Log($"Game Ended: \n Current deaths: {(int)propertiesThatChanged["KC"]}");
+        cam.SetActive(true);
+
+        int _highestKills = 0;
+        string _winner = "";
+
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++) {
+            int _kills = (int)PhotonNetwork.PlayerList[i].CustomProperties["K"];
+
+            if (_kills > _highestKills) {
+                _highestKills = _kills;
+                _winner = PhotonNetwork.PlayerList[i].NickName;
+            }
+        }
+
+        endText.transform.parent.gameObject.SetActive(true);
+        endText.text = $"Game Ended \n " +
+            $"Current deaths: {(int)propertiesThatChanged["KC"]} \n" +
+            $"Winner: <color=green>{_winner}</color> \t Kills: <color=red>{_highestKills}</color>";
+
+        Destroy((GameObject)PhotonNetwork.LocalPlayer.TagObject);
+
+        StartCoroutine(BackToMenuCo());
+    }
+
+    IEnumerator BackToMenuCo() {
+        yield return new WaitForSeconds(5f);
+        PhotonNetwork.Disconnect();
     }
 
     public override void OnDisconnected(DisconnectCause cause) {
