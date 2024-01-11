@@ -68,8 +68,8 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
             if (PhotonNetwork.MasterClient.CustomProperties == null) 
                 return;
 
-            int _kills = (int)PhotonNetwork.MasterClient.CustomProperties["K"];
-            int _deaths = (int)PhotonNetwork.MasterClient.CustomProperties["D"];
+            /*int _kills = (int)PhotonNetwork.MasterClient.CustomProperties["K"];
+            int _deaths = (int)PhotonNetwork.MasterClient.CustomProperties["D"];*/
             //Debug.Log($"MasterClient:: Kills: <color=red>{_kills}</color> | Deaths: <color=blue>{_deaths}</color>");
         }
     }

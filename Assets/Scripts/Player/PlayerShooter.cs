@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerShooter : MonoBehaviourPun, IPunObservable {
@@ -34,6 +35,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     [SerializeField] private ParticleSystem localShootPS;
     [SerializeField] private ParticleSystem swatShootPS;
+    [SerializeField] private GameObject impactFXPrefab;
+    [SerializeField] private AudioSource shootAudio;
 
     [SerializeField] private Transform arms;    // El objeto con los brazos y la camara del personaje.
     private float armsRotationX = 0f;    // La rotación en X de los brazos.
@@ -191,11 +194,15 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
                 if (_hit.collider.gameObject.CompareTag("Player")) {
                     _hit.collider.gameObject.GetComponent<PlayerShooter>().TakeDamage(damage);
                 }
+
+                CreateImpactFX(_hit.point + (_hit.normal * 0.001f), Quaternion.LookRotation(_hit.normal));
             }
 
-            photonView.RPC(nameof(RPC_Shoot), RpcTarget.Others);
+            photonView.RPC(nameof(RPC_Shoot), RpcTarget.Others, _hit.point + (_hit.normal * 0.001f), Quaternion.LookRotation(_hit.normal));
             armsAnim.SetTrigger("Shoot");
             localShootPS.Play();
+            shootAudio.pitch = Random.Range(0.8f, 1.2f);
+            shootAudio.PlayOneShot(shootAudio.clip);
 
             currentAmmo--;
         }
@@ -207,10 +214,13 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     }
 
     [PunRPC]
-    void RPC_Shoot() {
+    void RPC_Shoot(Vector3 pos, Quaternion rot) {
         // El resto de jugadores solo tiene que ver la parte visual del disparo (animación, particulas, sonido...).
         swatAnim.SetTrigger("Shoot");
         swatShootPS.Play();
+        shootAudio.pitch = Random.Range(0.8f, 1.2f);
+        shootAudio.PlayOneShot(shootAudio.clip);
+        CreateImpactFX(pos, rot);
     }
 
     public void TakeDamage(int _damage) {
@@ -347,6 +357,12 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         StartCoroutine(ReloadCo());
     }
 
+    void CreateImpactFX(Vector3 postion, Quaternion rot) {
+        //GameObject _impactFX = Instantiate(impactFXPrefab, hit.point + (hit.normal * 0.001f), Quaternion.LookRotation(hit.normal));
+
+        GameObject _impactFX = Instantiate(impactFXPrefab, postion, rot);
+    }
+
     void RageQuit() {
         PhotonNetwork.Disconnect();
     }
@@ -377,8 +393,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             return;
 
         if (photonView.IsMine) {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
     }
 }
