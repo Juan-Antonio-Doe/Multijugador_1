@@ -120,7 +120,7 @@ MonoBehaviour:
   fireRate: 10
   localShootPS: {fileID: 9038447809359393688}
   swatShootPS: {fileID: 1495340641449384615}
-  impactFXPrefab: {fileID: 8287607229351364743, guid: 2a615c5b24a57ee4196d2440089bda3b, type: 3}
+  impactFXPrefab: {fileID: 6532896264099765352, guid: 2a615c5b24a57ee4196d2440089bda3b, type: 3}
   shootAudio: {fileID: 6375406389149850555}
   arms: {fileID: 5199643079488270739}
   armsAnim: {fileID: 5199643079478451839}

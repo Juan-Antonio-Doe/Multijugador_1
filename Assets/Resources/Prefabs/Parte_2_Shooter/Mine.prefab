@@ -54,7 +54,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 65
   mineID: 0
-  explosionPrefab: {fileID: 5464255132879142151, guid: 5146fc484165c1c408763022cb84453a, type: 3}
+  explosionPrefab: {fileID: 5464255132879142151, guid: f71d8bbe4188d5e4b8ff4e9ba6330180, type: 3}
 --- !u!33 &7982439679392562432
 MeshFilter:
   m_ObjectHideFlags: 0

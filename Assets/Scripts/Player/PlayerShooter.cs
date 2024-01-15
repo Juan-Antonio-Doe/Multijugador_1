@@ -35,8 +35,10 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     [SerializeField] private ParticleSystem localShootPS;
     [SerializeField] private ParticleSystem swatShootPS;
-    [SerializeField] private GameObject impactFXPrefab;
+    [SerializeField] private Poolable impactFXPrefab;
+    private ObjectPool impactFXPool;
     [SerializeField] private AudioSource shootAudio;
+
 
     [SerializeField] private Transform arms;    // El objeto con los brazos y la camara del personaje.
     private float armsRotationX = 0f;    // La rotación en X de los brazos.
@@ -72,7 +74,10 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             currentAmmo = maxAmmo;
 
             PhotonNetwork.LocalPlayer.TagObject = gameObject;
+
         }
+
+        impactFXPool = ObjectPool.CreatePool(impactFXPrefab, 10, $"__{photonView.Owner.NickName} ImpactFXPool__");
     }
 
     void Update() {
@@ -360,7 +365,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     void CreateImpactFX(Vector3 postion, Quaternion rot) {
         //GameObject _impactFX = Instantiate(impactFXPrefab, hit.point + (hit.normal * 0.001f), Quaternion.LookRotation(hit.normal));
 
-        GameObject _impactFX = Instantiate(impactFXPrefab, postion, rot);
+        //Poolable _impactFX = Instantiate(impactFXPrefab, postion, rot);
+        impactFXPool.GetFromPool(postion, rot);
     }
 
     void RageQuit() {
