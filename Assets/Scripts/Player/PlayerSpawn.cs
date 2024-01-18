@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -29,6 +30,11 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
 
     GUIStyle style = new GUIStyle();
 
+    [Header("Kill Feed")]
+    [SerializeField] private Poolable killFeedItem;
+    private ObjectPool killFeddPool;
+    [SerializeField] private Transform killFeedLayout;
+
     void Awake() {
         if (Instance == null)
             Instance = this;
@@ -44,6 +50,8 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
         Vector3 _spawnPos = GetSpawnPosition();
 
         Init();
+
+        killFeddPool = ObjectPool.CreatePool(killFeedItem, 8, "__KillFeedItem__", killFeedLayout);
 
         yield return new WaitForSeconds(1f); // Hay que añadir este Delay para que funcione correctamente.
 
@@ -103,6 +111,13 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
                 EndGame(propertiesThatChanged);
             }
         }
+    }
+
+    public void ShowKillFeed(string _deadName, string _killerName) {
+        GameObject killFedd = killFeddPool.GetFromPool();
+        killFedd.GetComponentInChildren<TMP_Text>().text = 
+            //$"<sprite index=3><color=red>{_killerName}</color><sprite index=3> has killed <color=blue>{_deadName}</color>";
+            $"{_killerName} has killed {_deadName}";
     }
 
     void EndGame(Hashtable propertiesThatChanged) {

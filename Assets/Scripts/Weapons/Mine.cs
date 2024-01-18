@@ -32,18 +32,26 @@ public class Mine : MonoBehaviour, IOnEventCallback {
     }
 
     void Explode() {
+        if (exploded) return;
+
         exploded = true;
 
         if (PhotonNetwork.IsMasterClient) {
             Collider[] _targets = Physics.OverlapSphere(transform.position, explosionRadius, damageLayer);
 
             for (int i = 0; i < _targets.Length; i++) {
-                if (_targets[i].CompareTag("Player")) {
+                if (_targets[i] != null && _targets[i].CompareTag("Player")) {
                     _targets[i].GetComponent<PlayerShooter>().TakeDamage(damage);
                 }
             }
         }
 
+        /*
+         * Como todos los jugadores tienen una copia de la granada en su juego, con instanciar localmente la explosion,
+         * la vera todo el mundo sin necesidad de sincronizar nada.
+         */
+
+        Instantiate(explosionPrefab, transform.position, explosionPrefab.transform.rotation);
         Destroy(gameObject);
     }
 
@@ -67,12 +75,5 @@ public class Mine : MonoBehaviour, IOnEventCallback {
     void OnDestroy() {
         if (gameObject == null) 
             return;
-
-        /*
-         * Como todos los jugadores tienen una copia de la granada en su juego, con instanciar localmente la explosion,
-         * la vera todo el mundo sin necesidad de sincronizar nada.
-         */
-
-        Instantiate(explosionPrefab, transform.position, explosionPrefab.transform.rotation);
     }
 }

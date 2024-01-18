@@ -59,13 +59,6 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         if (!photonView.IsMine) {
             swatAnim.gameObject.SetActive(true);
             arms.gameObject.SetActive(false);
-
-            // Inicializamos las propiedades del jugador.
-            Hashtable _properties = new Hashtable() {
-                { "K", 0 }, // Kills
-                { "D", 0 }, // Deaths
-            };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(_properties);
         }
         else {
             armsAnim = arms.GetComponent<Animator>();
@@ -73,8 +66,14 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
             currentAmmo = maxAmmo;
 
-            PhotonNetwork.LocalPlayer.TagObject = gameObject;
+            // Inicializamos las propiedades del jugador.
+            Hashtable _properties = new Hashtable() {
+                { "K", 0 }, // Kills
+                { "D", 0 }, // Deaths
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(_properties);
 
+            PhotonNetwork.LocalPlayer.TagObject = gameObject;
         }
 
         impactFXPool = ObjectPool.CreatePool(impactFXPrefab, 10, $"__{photonView.Owner.NickName} ImpactFXPool__");
@@ -263,7 +262,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
     }
 
     [PunRPC]
-    void RPC_Die(Player _killer) {
+    void RPC_Die(Player _killer, PhotonMessageInfo info) {
         StartCoroutine(RespawnCo());
 
         if (_killer == PhotonNetwork.LocalPlayer) {
@@ -278,8 +277,9 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
             PhotonNetwork.LocalPlayer.CustomProperties["K"] = _kills;
             PhotonNetwork.LocalPlayer.SetCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
 
-            Debug.Log($"<color=red><b>{_killer.NickName}</b></color> me ha matado.");
+            //Debug.Log($"<color=red><b>{_killer.NickName}</b></color> me ha matado.");
         }
+        PlayerSpawn.Instance.ShowKillFeed(info.Sender.NickName, _killer.NickName);
     }
 
     IEnumerator RespawnCo() {

@@ -1294,6 +1294,8 @@ MonoBehaviour:
   cam: {fileID: 442940024}
   endText: {fileID: 384797852}
   maxKills: 10
+  killFeedItem: {fileID: -4458419469211927247, guid: 9ff08f9fab78e3e418409bcc98675401, type: 3}
+  killFeedLayout: {fileID: 7969939921092455256}
 --- !u!4 &1385452528
 Transform:
   m_ObjectHideFlags: 0
@@ -1601,6 +1603,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 398797913}
     m_Modifications:
+    - target: {fileID: 1632306009996660041, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1632306009996660041, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1632306009996660041, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4500242572870327746, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+      propertyPath: m_Name
+      value: KillFeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 4500242572870327746, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6673918546084748249, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
       propertyPath: m_Name
       value: __KillFeed__
@@ -1686,10 +1708,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4500242572870327746, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+--- !u!224 &7969939921092455256 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5705315641864368796, guid: 3e3042551e33d2b4aaec2feca4101e56, type: 3}
+  m_PrefabInstance: {fileID: 7969939921092455255}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
