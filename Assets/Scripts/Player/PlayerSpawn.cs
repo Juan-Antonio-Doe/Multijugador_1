@@ -116,8 +116,7 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
     public void ShowKillFeed(string _deadName, string _killerName) {
         GameObject killFedd = killFeddPool.GetFromPool();
         killFedd.GetComponentInChildren<TMP_Text>().text = 
-            //$"<sprite index=3><color=red>{_killerName}</color><sprite index=3> has killed <color=blue>{_deadName}</color>";
-            $"{_killerName} has killed {_deadName}";
+            $"<sprite index=3><color=red>{_killerName}</color><sprite index=3> has killed <color=blue>{_deadName}</color>";
     }
 
     void EndGame(Hashtable propertiesThatChanged) {
