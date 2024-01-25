@@ -45,6 +45,7 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
 
     [SerializeField] private Animator armsAnim;   // El animator con el modelo del personaje que se mostrará al jugador.    
     [SerializeField] private Animator swatAnim;   // El animator con el modelo del personaje que se mostrará a otros jugadores.
+    public Transform SwatAnim { get { return swatAnim.transform; } }
 
     private Vector3 networkPos; // La posición por red para este objeto. Siver para poder interpolar la posicion y que no se vea a trompicones.
     private Quaternion networkRot; // La rotación por red para este objeto.
@@ -77,6 +78,8 @@ public class PlayerShooter : MonoBehaviourPun, IPunObservable {
         }
 
         impactFXPool = ObjectPool.CreatePool(impactFXPrefab, 10, $"__{photonView.Owner.NickName} ImpactFXPool__");
+
+        PlayerSpawn.Instance.AddToPlayerList(this);
     }
 
     void Update() {

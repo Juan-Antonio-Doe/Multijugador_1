@@ -1294,6 +1294,7 @@ MonoBehaviour:
   cam: {fileID: 442940024}
   endText: {fileID: 384797852}
   maxKills: 10
+  <otherPlayerMat>k__BackingField: {fileID: 2100000, guid: fe0cc9c33d7602a46a80e066f3f48da0, type: 2}
   killFeedItem: {fileID: -4458419469211927247, guid: 9ff08f9fab78e3e418409bcc98675401, type: 3}
   killFeedLayout: {fileID: 7969939921092455256}
 --- !u!4 &1385452528

@@ -26,6 +26,8 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
 
     [SerializeField] private int maxKills = 10;
 
+    [field: SerializeField] private Material otherPlayerMat { get; set; }
+
     private int playerLastCount = 0;
 
     GUIStyle style = new GUIStyle();
@@ -34,6 +36,9 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
     [SerializeField] private Poolable killFeedItem;
     private ObjectPool killFeddPool;
     [SerializeField] private Transform killFeedLayout;
+
+    [field: SerializeField] private List<PlayerShooter> allPlayers { get; set; } = new List<PlayerShooter>();
+
 
     void Awake() {
         if (Instance == null)
@@ -62,6 +67,7 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
 
         // Crea un prefab para todos los usuarios conectados en la posicion indicada.
         PhotonNetwork.Instantiate(prefab.name, _spawnPos, prefab.transform.rotation);
+
     }
 
     private void Update() {
@@ -148,6 +154,34 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
     IEnumerator BackToMenuCo() {
         yield return new WaitForSeconds(5f);
         PhotonNetwork.Disconnect();
+    }
+
+    public void AddToPlayerList(PlayerShooter player) {
+        if (!allPlayers.Contains(player))
+            allPlayers.Add(player);
+    }
+
+    IEnumerator ChangePlayerMatCo(Player player) {
+        yield return new WaitForSeconds(1f);
+
+        foreach (PlayerShooter _player in allPlayers) {
+            if (_player.photonView.Owner == player) {
+                //_player.SwatAnim.GetChild(0).GetChild(0).GetComponent<SkinnedMeshRenderer>().material = otherPlayerMat;
+                _player.SwatAnim.GetComponentInChildren<Renderer>().material = otherPlayerMat;
+                break;
+            }
+            yield return null;
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer) {
+        Debug.Log($"<color=green>Player {newPlayer.NickName} has joined the room.</color>");
+
+        StartCoroutine(ChangePlayerMatCo(newPlayer));
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer) {
+        Debug.Log($"<color=red>Player {otherPlayer.NickName} has left the room.</color>");
     }
 
     public override void OnDisconnected(DisconnectCause cause) {
