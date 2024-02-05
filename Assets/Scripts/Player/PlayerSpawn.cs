@@ -162,12 +162,14 @@ public class PlayerSpawn : MonoBehaviourPunCallbacks {
     }
 
     IEnumerator ChangePlayerMatCo(Player player) {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
         foreach (PlayerShooter _player in allPlayers) {
+            if (_player == null || _player.photonView == null ||  _player.photonView.Owner == null)
+                continue;
             if (_player.photonView.Owner == player) {
-                //_player.SwatAnim.GetChild(0).GetChild(0).GetComponent<SkinnedMeshRenderer>().material = otherPlayerMat;
-                _player.SwatAnim.GetComponentInChildren<Renderer>().material = otherPlayerMat;
+                _player.SwatAnim.GetChild(0).GetChild(0).GetComponent<SkinnedMeshRenderer>().material = otherPlayerMat;
+                //_player.SwatAnim.GetComponentInChildren<Renderer>().material = otherPlayerMat;
                 break;
             }
             yield return null;

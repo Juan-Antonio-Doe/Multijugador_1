@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class Mine : MonoBehaviour, IOnEventCallback {
 
@@ -32,9 +33,18 @@ public class Mine : MonoBehaviour, IOnEventCallback {
     }
 
     void Explode() {
-        if (exploded) return;
+        if (exploded) 
+            return;
 
         exploded = true;
+
+        // Remove the cache of the spawn mine (This event do nothing on code, only remove the cache).
+        Hashtable hashtable = new();
+        hashtable.Add("P", transform.position);
+        hashtable.Add("ID", mineID);
+
+        /*PhotonNetwork.RaiseEvent(MineSpawner.MINE_SPAWN, hashtable, new RaiseEventOptions { Receivers = ReceiverGroup.All, 
+            CachingOption = EventCaching.RemoveFromRoomCache }, SendOptions.SendReliable);*/
 
         if (PhotonNetwork.IsMasterClient) {
             Collider[] _targets = Physics.OverlapSphere(transform.position, explosionRadius, damageLayer);
@@ -63,8 +73,9 @@ public class Mine : MonoBehaviour, IOnEventCallback {
     public void OnEvent(EventData photonEvent) {
         //Debug.Log($"Evento recibido: {photonEvent.Code}");
 
-        if (photonEvent.Code == MINE_EXPLODE && mineID == (int)photonEvent.CustomData) {
-            Explode();
+        if (photonEvent.Code == MINE_EXPLODE) {
+            if (mineID == (int)photonEvent.CustomData)
+                Explode();
         }
     }
 
